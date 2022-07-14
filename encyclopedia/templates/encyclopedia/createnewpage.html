@@ -1,0 +1,22 @@
+{% extends "encyclopedia/layout.html" %}
+
+{% block title %}
+    {{title}}
+{% endblock %}
+
+{% block body %}
+ <h1>{{title}}</h1>
+    <form action="{% url 'createnewpage' %}" method="post">
+        {% csrf_token %}
+        {{form}}
+        <input type="submit">
+    </form>
+<!--    <form action="/action_page.php">-->
+<!--  <p><label for="w3review">Review of W3Schools:</label></p>-->
+<!--  <textarea id="w3review" name="w3review" rows="4" cols="50">At w3schools.com you will learn how to make a website. They offer free tutorials in all web development technologies.</textarea>-->
+<!--  <br>-->
+<!--  <input type="submit" value="Submit">-->
+<!--</form>-->
+
+
+{% endblock %}
