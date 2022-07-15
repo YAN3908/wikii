@@ -18,6 +18,12 @@ textarea {
     width: 80%;
     margin-bottom: 20px;
 }
+
+#id_title{
+margin-bottom: 20px;
+}
+
+
 #id_task{
 margin-bottom: 20px;
 }
