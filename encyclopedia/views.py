@@ -8,8 +8,9 @@ from . import util
 
 
 class NewTaskForm(forms.Form):
-    title = forms.CharField(label="Title:")
-    text_form = forms.CharField(label="Content:", widget=forms.Textarea)
+    title = forms.CharField(label="Title:", initial="")
+    text_form = forms.CharField(label="Content:", widget=forms.Textarea, initial="")
+
 
 
 # class EditForms(forms.Form):
@@ -53,7 +54,7 @@ def createnewpage(request):
             else:
                 util.save_entry(title, text_form)
                 # return HttpResponseRedirect("/wiki/" + title)
-                return redirect(reverse("index")+title)
+                return redirect(reverse("index") + title)
                 # return render(request, "encyclopedia/entrys.html",
                 #               {"entries": markdown2.markdown(util.get_entry(title)), 'title': title, })
 
