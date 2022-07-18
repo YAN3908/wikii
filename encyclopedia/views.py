@@ -1,3 +1,5 @@
+from random import random, randint
+
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
 import markdown2
@@ -7,14 +9,8 @@ from django.urls import reverse
 from . import util
 
 
-class NewTaskForm(forms.Form):
-    title = forms.CharField(label="Title:", initial="")
-    text_form = forms.CharField(label="Content:", widget=forms.Textarea, initial="")
-
-
-
-# class EditForms(forms.Form):
-# EditForm = forms.CharField(label="Title:")
+class EditForms(forms.Form):
+    EditForm = forms.CharField(label='', widget=forms.HiddenInput())
 
 
 def index(request):
@@ -31,41 +27,40 @@ def index(request):
 
 
 def entries(request, name):
-    class EditForms(forms.Form):
-        EditForm = forms.CharField(label='', widget=forms.HiddenInput(), initial=name)
+    markText = util.get_entry(name).split("\n", 2)[2]
+    if request.method == "POST":
+        return createnewpage(request, name, markText)
 
     return render(request, "encyclopedia/entrys.html",
-                  {"entries": markdown2.markdown(util.get_entry(name)), 'title': name, 'form': EditForms})
+                  {"entries": markdown2.markdown(util.get_entry(name)), 'title': name, })
 
 
-def createnewpage(request):
+def createnewpage(request, initTitle='', initText=''):
+    print(request.POST)
+
+    class NewTaskForm(forms.Form):
+        title = forms.CharField(label="Title:", initial=initTitle)
+        text_form = forms.CharField(label="Content:", widget=forms.Textarea, initial=initText)
+
     if request.method == "POST":
-        if 'EditForm' in request.POST:
-            return HttpResponse('worced')
         form = NewTaskForm(request.POST)
-        # print(request.POST)
         if form.is_valid():
             title = form.cleaned_data["title"]
             text_form = "# " + title + "\n" * 2 + form.cleaned_data["text_form"]
             filenames = util.list_entries()
-            if title in filenames:
+            if title in filenames and not 'EditForm' in (request.POST):
                 return render(request, "encyclopedia/index.html",
                               {'title': 'File already exists'})
             else:
                 util.save_entry(title, text_form)
-                # return HttpResponseRedirect("/wiki/" + title)
                 return redirect(reverse("index") + title)
-                # return render(request, "encyclopedia/entrys.html",
-                #               {"entries": markdown2.markdown(util.get_entry(title)), 'title': title, })
-
+    if initTitle:
+        return render(request, "encyclopedia/createnewpage.html",
+                      {'title': 'Edit page', 'form': NewTaskForm, 'flag': EditForms})
     return render(request, "encyclopedia/createnewpage.html", {'title': 'Greate new page', 'form': NewTaskForm})
 
-    # return HttpResponse('worced')
-# def searh(request):
-#     if request.POST['q']:
-#         word = request.POST['q']
-#         filenames = util.list_entries()
-#         scope = list(filename for filename in filenames if word.lower().strip() in filename.lower())
-#         return render(request, "encyclopedia/index.html", {"entries": scope, 'title': 'Search results'})
-#
-#     return HttpResponse(request.POST['q'])
+
+def randompage(request):
+    name_file = util.list_entries()
+    rand_int = randint(0, len(name_file) - 1)
+    return entries(request, name_file[rand_int])

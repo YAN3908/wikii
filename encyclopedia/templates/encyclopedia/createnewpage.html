@@ -9,7 +9,10 @@
     <form action="{% url 'createnewpage' %}" method="post">
         {% csrf_token %}
         {{form}}
-        <input type="submit">
+        {%if flag%}
+        {{flag}}
+        {%endif%}
+        <input type="submit"  value="{{title}}">
     </form>
 <!--    <form action="/action_page.php">-->
 <!--  <p><label for="w3review">Review of W3Schools:</label></p>-->
