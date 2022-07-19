@@ -27,10 +27,11 @@ def index(request):
 
 
 def entries(request, name):
-    markText = util.get_entry(name).split("\n", 2)[2]
+    print('hello')
     if request.method == "POST":
+        markText = util.get_entry(name).split("\n", 2)[2]
         return createnewpage(request, name, markText)
-
+    print('hello')
     return render(request, "encyclopedia/entrys.html",
                   {"entries": markdown2.markdown(util.get_entry(name)), 'title': name, })
 
@@ -63,4 +64,5 @@ def createnewpage(request, initTitle='', initText=''):
 def randompage(request):
     name_file = util.list_entries()
     rand_int = randint(0, len(name_file) - 1)
-    return entries(request, name_file[rand_int])
+    # return entries(request, name_file[rand_int])
+    return HttpResponseRedirect(reverse('read_entrys', args=[name_file[rand_int]]))
